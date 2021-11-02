@@ -24,37 +24,20 @@ private:
 class Edge
 {
 public:
-    ~Edge();
-    void InitalizeValue(int a, int b, int _distance); //Edge의 Vertex의 index와 distance를 초기화 하는 함수
-    vector<int> connectedVertex;
+    Edge(int vertexIndex, int vertexWeight);
+    int connectedVertex_Index;
     int distance;
 private:
 
 };
 
-class Graph
-{
-public:
-    Graph();
-    ~Graph();
-    vector<Vertex> vertexList;
-    vector<Edge> edgeList;
-    int vertex_count;
-    int edge_count;
 
-private:
-
-};
-
-Graph gGraph;
-
+//그래프 인덱스는 정점의 번호
+vector<Edge> Graph[800];
 
 
 //현재 cpp파일과 같은 디렉토리에 있는 List.txt 파일을 불러오고, 읽은 값을 초기화 시켜주는 함수
 void ReadFile();
-
-
-
 
 
 
@@ -67,26 +50,12 @@ Vertex::~Vertex()
 {
 }
 
-
-
-Edge::~Edge()
+Edge::Edge(int vertexIndex, int vertexWeight) : connectedVertex_Index(vertexIndex), distance(vertexWeight)
 {
 }
 
-void Edge::InitalizeValue(int a, int b, int _distance)
-{
-    this->connectedVertex.push_back(a);
-    this->connectedVertex.push_back(b);
-    distance = _distance;
-}
 
-Graph::Graph() : vertex_count(0), edge_count(0)
-{
-}
 
-Graph::~Graph()
-{
-}
 
 
 void ReadFile()
