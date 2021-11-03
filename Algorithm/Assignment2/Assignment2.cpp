@@ -26,8 +26,8 @@ private:
 class Graph
 {
 public:
-    ~Graph();
     vector<Edge>* vertexList; //각각의 인덱스는 정점의 번호를 표현하는 리스트 자료구조
+    int mustVertex[2];
     void InitalizeGraph(int _vertex_count, int _edge_count); //vertexList, vertex count, edge count를 초기화 하는 함수
     int vertex_count;
     int edge_count;
@@ -60,9 +60,7 @@ Edge::Edge(int vertexIndex, int vertexWeight) : connectedVertex_Index(vertexInde
 }
 
 
-Graph::~Graph()
-{
-}
+
 
 void Graph::InitalizeGraph(int _vertex_count, int _edge_count)
 {
@@ -101,8 +99,8 @@ void ReadFile()
     }
 
     
-    //List를 한줄씩 읽으면서 Graph를 초기화한다.
-    for (int i = 0; i <edge_count; i++)
+    //List를 한줄씩 읽으면서 Graph를 초기화한다. 
+    for (int i = 0; i <=edge_count; i++)
     {
         int vertex_a, vertex_b, distance;
 
@@ -114,6 +112,13 @@ void ReadFile()
         ss >> vertex_b;
         ss >> distance;
 
+        if (i == edge_count) //마지막줄일경우 반드시 지나야하는 노드로 저장한다
+        {
+            gGraph.mustVertex[0] = vertex_a;
+            gGraph.mustVertex[1] = vertex_b;
+            break;
+        }
+
         //Edge를 생성하고 gGraph에 넣어준다. 양방향이니 해당작업은 2번씩
         Edge newEdge_1(vertex_b, distance); //a -> b
         Edge newEdge_2(vertex_a, distance); //b -> a
@@ -121,15 +126,13 @@ void ReadFile()
         gGraph.vertexList[vertex_a].push_back(newEdge_1);
         gGraph.vertexList[vertex_b].push_back(newEdge_2);
 
+        
+
     }
 
-    //vector리스트에 있는 모든 자료 뿜어내기
-    /*for (vector<Edge>::iterator i = gGraph.vertexList[4].begin(); i != gGraph.vertexList[4].end(); i++)
-    {
-        cout << (*i).connectedVertex_Index << endl;
-    }*/
+    //맨 마지막줄을 읽어서 반드시 지나야하는 노드 2개를 저장한다.
 
-
+ 
 }
 
 int extractMin(vector<int>& Q, int* d)
@@ -199,8 +202,38 @@ int FindShortestPath(int vertex_a, int vertex_b)
 
 int main()
 {
+    //루트a, 루트b를 저장할 변수
+    int route_A = 0;
+    int route_B = 0;
+    int true_Route = -1;
     ReadFile();
     
-    cout << FindShortestPath(1, 6) << endl;
+    //루트a 계산  루트 a : 시작점 - a - b - 끝점
+    route_A = FindShortestPath(1, gGraph.mustVertex[0]);
+    if (route_A != -1)
+    {
+        int a = FindShortestPath(gGraph.mustVertex[0], gGraph.mustVertex[1]); // a - b
+        int b = FindShortestPath(gGraph.mustVertex[1], gGraph.vertex_count); // b - 끝점
+        if (a != -1 && b != -1)
+            route_A += a + b;
+    }
 
+
+    //루트b 계산 루트 b : 시작점 - b - a - 끝점
+    route_B += FindShortestPath(1, gGraph.mustVertex[1]);
+    if (route_B != -1)
+    {
+        int a = FindShortestPath(gGraph.mustVertex[1], gGraph.mustVertex[1]); // b - a
+        int b = FindShortestPath(gGraph.mustVertex[0], gGraph.vertex_count); // a - 끝점
+        if (a != -1 && b != -1)
+            route_B += a + b;
+    }
+
+    //루트 a와 루트 b중에 크기가 작은 값을 리턴
+    if (route_A < route_B && route_A != -1)
+        true_Route = route_A;
+    else if (route_B <= route_A && route_B != -1)
+        true_Route = route_B;
+
+    cout << "Output : " << true_Route << endl;
 }
