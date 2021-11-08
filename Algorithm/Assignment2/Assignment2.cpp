@@ -38,6 +38,8 @@ private:
 
 Graph gGraph; //참조할 전역변수 그래프
 
+int iteration;
+
 
 //현재 cpp파일과 같은 디렉토리에 있는 List.txt 파일을 불러오고, 읽은 값을 초기화 시켜주는 함수
 void ReadFile();
@@ -130,7 +132,6 @@ void ReadFile()
 
     }
 
-    //맨 마지막줄을 읽어서 반드시 지나야하는 노드 2개를 저장한다.
 
  
 }
@@ -143,6 +144,7 @@ int extractMin(vector<int>& Q, int* d)
         //현재 순회값이 이전 순회값보다 작다면 update한다
         if (d[i] < d[u])
             u = i;
+        iteration++;
     }
     return u;
 }
@@ -182,12 +184,15 @@ int FindShortestPath(int vertex_a, int vertex_b)
         //u와 연결된 노드를 검색한다
         for (Edge v : gGraph.vertexList[u])
         {
+            iteration++;
             // v가 방문하지 않은 노드이며, d[u] + 엣지의 거리가 d[v] 보다 작다면 relaxation해준다
-            if (find(VsubS.begin(), VsubS.end(), v.connectedVertex_Index) != VsubS.end() && distance_List[u] + v.distance < distance_List[v.connectedVertex_Index])
+            if (find(VsubS.begin(), VsubS.end(), v.connectedVertex_Index) != VsubS.end() &&
+                distance_List[u] + v.distance < distance_List[v.connectedVertex_Index])
             {
                 distance_List[v.connectedVertex_Index] = distance_List[u] + v.distance;
             }
         }
+        iteration++;
     }
 
     //정점 a와 정점 b가 연결되지 않았다면 -1을 반환한다
@@ -236,4 +241,5 @@ int main()
         true_Route = route_B;
 
     cout << "Output : " << true_Route << endl;
+    cout << "execution time : " << iteration << endl;
 }
