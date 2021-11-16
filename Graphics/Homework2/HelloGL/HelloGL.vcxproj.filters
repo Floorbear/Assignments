@@ -15,19 +15,8 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Assignment3.cpp">
+    <ClCompile Include="RobotArms.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="List_100.txt">
-      <Filter>소스 파일</Filter>
-    </Text>
-    <Text Include="List_1000.txt">
-      <Filter>소스 파일</Filter>
-    </Text>
-    <Text Include="List_10000.txt">
-      <Filter>소스 파일</Filter>
-    </Text>
   </ItemGroup>
 </Project>
