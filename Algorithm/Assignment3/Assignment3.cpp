@@ -2,6 +2,7 @@
 #include <vector>
 #include <fstream>
 #include <sstream>
+#include <chrono>
 
 using namespace std;
 
@@ -150,8 +151,13 @@ vector<int> ReadTextFile(int readType)
 
 int main()
 {
-    vector<int> testVector = ReadTextFile(0);
-    cout << LinearTimeSelection(testVector,45,3);
+    std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
+    vector<int> testVector = ReadTextFile(2);
+    std::chrono::duration<double> sec = std::chrono::system_clock::now() - start;
+
+    int want_index = 5000;
+    cout << want_index<<"번째 숫자 : " << LinearTimeSelection(testVector, want_index, 7) << endl;
+    cout << sec.count() << endl;
 }
 
 
