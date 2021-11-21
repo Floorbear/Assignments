@@ -39,7 +39,7 @@ int InsertionSort(vector<int>& list, int want_index)
     return list[want_index - 1];
 }
 
-int LinearTimeSelection(vector<int> list, int want_index, int split_size)
+int LinearTimeSelection(vector<int> list, int want_index, int split_size) //정렬하고 싶은 list, 원하는 index의 순서, subgroup의 분할 사이즈
 {
     //elements의 숫자가 split_size 보다 작으면 InsertionSort를 이용해 원하는 element를 찾는다
     if (list.size() <= split_size)
@@ -156,8 +156,8 @@ int main()
     std::chrono::duration<double> sec = std::chrono::system_clock::now() - start;
 
     int want_index = 5000;
-    cout << want_index<<"번째 숫자 : " << LinearTimeSelection(testVector, want_index, 7) << endl;
-    cout << sec.count() << endl;
+    cout << want_index<<"번째 숫자 : " << LinearTimeSelection(testVector, want_index, 3) << endl;
+    cout <<"수행시간 : " << sec.count() << endl;
 }
 
 
