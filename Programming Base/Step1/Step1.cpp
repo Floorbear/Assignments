@@ -17,11 +17,11 @@ void ShowSizeOfCircle()
 void ShowWonToDollar()
 {
     float Dollar = 0.f;
-    float Won = 0;
+    int Won = 0;
 
     printf("원화를 입력해 주세용\n");
-    scanf_s("%f", &Won);
-    Dollar = Won / 1300.16f;
+    scanf_s("%d", &Won);
+    Dollar = (float)Won / 1303.5;
 
     printf("달러 : %.3f$", Dollar);
 }
@@ -51,9 +51,27 @@ void ShowSumNAverage()
 
 }
 
+void ShowSizeNRound()
+{
+    double XLength = 0;
+    double YLength = 0;
+    double Size = 0;
+    double Round = 0;
+
+    printf("가로 길이를 입력해 주세용 : ");
+    scanf_s("%lf", &XLength);
+    printf("세로 길이를 입력해 주세용 : ");
+    scanf_s("%lf", &YLength);
+
+    Size = XLength * YLength;
+    Round = 2 * XLength + 2 * YLength;
+    printf("면적은 %lf 입니다. 둘레는 %lf 입니다. \n ",Size,Round);
+
+}
+
 int main()
 {
-    ShowSumNAverage();
+    ShowSizeNRound();
 }
 
 
