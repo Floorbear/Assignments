@@ -71,7 +71,7 @@ int main()
     clock_t cStart = clock();
     //AddCPU(ArrSum, Arr1, Arr2, INDEXCOUNT);
     //!! 중요 !!
-    //! 한 블록 당 쓰레드의 최대 개수가 존재한다 (대략 1024개 이상)
+    //! 한 블록 당 쓰레드의 최대 개수가 존재한다 (1024개)
     //! 따라서 쓰레드 수가 많아질 것같으면 블록을 추가해야 한다.
     //! 몇번째 블록인지  blockIdx를 통해 확인 가능하다
     AddGPU<<<INDEXCOUNT / 1024,1024>>>(GPU_ArrSum, GPU_Arr1, GPU_Arr2);

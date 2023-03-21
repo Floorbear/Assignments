@@ -74,4 +74,5 @@ int main()
     ShowSizeNRound();
 }
 
+//3820초를 입력받으면 몇시간 몇분 몇초인지
 
