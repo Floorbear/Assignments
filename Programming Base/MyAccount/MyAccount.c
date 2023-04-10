@@ -2,91 +2,206 @@
 
 int main()
 {
-	int iOldID = 115;
-	int iOldMoney = 70;
+	//int iOldID = 115;
+	//int iOldMoney = 70;
 
 	int iNewID = -1;
 	int iNewMoney = -1;
 
+	int iID0 = -1;
+	int iMoney0 = -1;
+
+	int iID1 = -1;
+	int iMoney1 = -1;
+
+	int iID2 = -1;
+	int iMoney2 = -1;
+
+	int iAccountCount = 0;
+
 	int iInput = 0;
 
-	printf("---- Menu ---- \n");
-	printf("1.	계좌 계설 \n");
-	printf("2.	입금 \n");
-	printf("3.	출금 \n");
-	printf("4.	계좌정보 전체 출력 \n");
-	printf("5.	프로그램 종료 \n");
-	printf("선택 : ");
-	scanf_s("%d", &iInput);
+	while (1)
+	{
+		printf("---- Menu ---- \n");
+		printf("1.	계좌 개설 \n");
+		printf("2.	입금 \n");
+		printf("3.	출금 \n");
+		printf("4.	계좌정보 전체 출력 \n");
+		printf("5.	프로그램 종료 \n");
+		printf("선택 : ");
+		scanf_s("%d", &iInput);
 
-	if (iInput == 1)
-	{
-		printf("[계좌개설]\n");
-		printf("계좌ID : ");
-		scanf_s("%d", &iNewID);
-		printf("입금액 : ");
-		scanf_s("%d", &iNewMoney);
-		if (iNewID == iOldID)
+		if (iInput == 1)
 		{
-			printf("**계좌 개설 실패**\n이미 존재하는 아이디입니다.\n");
+			printf("[계좌개설]\n");
+			printf("계좌ID : ");
+			scanf_s("%d", &iNewID);
+			printf("입금액 : ");
+			scanf_s("%d", &iNewMoney);
+			if (iAccountCount >= 3)
+			{
+				printf("**계좌 개설 실패**\n이미 이미 3개의 계좌가 존재합니다.\n");
+			}
+			else
+			{
+				if (iNewID == iID0)
+				{
+					printf("**계좌 개설 실패**\n이미 존재하는 아이디입니다.\n");
+				}
+				else if (iNewID == iID1)
+				{
+					printf("**계좌 개설 실패**\n이미 존재하는 아이디입니다.\n");
+				}
+				else if (iNewID == iID2)
+				{
+					printf("**계좌 개설 실패**\n이미 존재하는 아이디입니다.\n");
+				}
+				else
+				{
+					iAccountCount++;
+					printf("**계좌 개설 성공**\n");
+					printf("계좌ID : %d\n", iNewID);
+					printf("입금액 : %d\n", iNewMoney);
+					if (iID0 == -1) // -1 : 아직 계좌가 만들어지지 않음
+					{
+						iID0 = iNewID;
+						iMoney0 = iNewMoney;
+					}
+					else if (iID1 == -1)
+					{
+						iID1 = iNewID;
+						iMoney1 = iNewMoney;
+					}
+					else
+					{
+						iID2 = iNewID;
+						iMoney2 = iNewMoney;
+					}
+				}
+			}
+
+		}
+		else if (iInput == 2)
+		{
+			printf("[입 금]\n");
+			printf("계좌ID : ");
+			scanf_s("%d", &iNewID);
+			printf("입금액 : ");
+			scanf_s("%d", &iNewMoney);
+			if (iID0 != iNewID && iID1 != iNewID && iID2 != iNewID)
+			{
+				printf("**입금 실패**\n계좌ID가 존재하지 않습니다.\n");
+			}
+			else
+			{
+				if (iID0 == iNewID)
+				{
+					iMoney0 += iNewMoney;
+					printf("**입금 성공**\n");
+					printf("계좌ID : %d\n", iNewID);
+					printf("잔액 : %d\n", iMoney0);
+				}
+				else if (iID1 == iNewID)
+				{
+					iMoney1 += iNewMoney;
+					printf("**입금 성공**\n");
+					printf("계좌ID : %d\n", iNewID);
+					printf("잔액 : %d\n", iMoney1);
+				}
+				else
+				{
+					iMoney2 += iNewMoney;
+					printf("**입금 성공**\n");
+					printf("계좌ID : %d\n", iNewID);
+					printf("잔액 : %d\n", iMoney2);
+				}
+			}
+		}
+		else if (iInput == 3)
+		{
+			printf("[출 금]\n");
+			printf("계좌ID : ");
+			scanf_s("%d", &iNewID);
+			printf("출금액 : ");
+			scanf_s("%d", &iNewMoney);
+			if (iID0 != iNewID && iID1 != iNewID && iID2 != iNewID)
+			{
+				printf("**출금 실패**\n계좌ID가 존재하지 않습니다.\n");
+			}
+			else
+			{
+				if (iID0 == iNewID)
+				{
+					if (iNewMoney > iMoney0)
+					{
+						printf("**출금 실패**\n잔액이 부족합니다.\n");
+					}
+					else
+					{
+						iMoney0 -= iNewMoney;
+						printf("**출금 성공**\n");
+						printf("계좌ID : %d\n", iNewID);
+						printf("잔액 : %d\n", iMoney0);
+					}
+				}
+				else if (iID1 == iNewID)
+				{
+					if (iNewMoney > iMoney1)
+					{
+						printf("**출금 실패**\n잔액이 부족합니다.\n");
+					}
+					else
+					{
+						iMoney1 -= iNewMoney;
+						printf("**출금 성공**\n");
+						printf("계좌ID : %d\n", iNewID);
+						printf("잔액 : %d\n", iMoney1);
+					}
+				}
+				else
+				{
+					if (iNewMoney > iMoney0)
+					{
+						printf("**출금 실패**\n잔액이 부족합니다.\n");
+					}
+					else
+					{
+						iMoney2 -= iNewMoney;
+						printf("**출금 성공**\n");
+						printf("계좌ID : %d\n", iNewID);
+						printf("잔액 : %d\n", iMoney2);
+					}
+				}
+			}
+		}
+		else if (iInput == 4)
+		{
+			if (iID0 != -1)
+			{
+				printf("계좌ID : %d\n", iID0);
+				printf("잔액 : %d\n\n\n", iMoney0);
+			}
+
+			if (iID1 != -1)
+			{
+				printf("계좌ID : %d\n", iID1);
+				printf("잔액 : %d\n\n\n", iMoney1);
+			}
+
+			if (iID2 != -1)
+			{
+				printf("계좌ID : %d\n", iID2);
+				printf("잔액 : %d\n\n\n", iMoney2);
+			}
+	
+		}
+		else if (iInput == 5)
+		{
+			printf("프로그램을 종료합니다\n");
 			return;
 		}
-		printf("**계좌 개설 성공**\n");
-		printf("계좌ID : %d\n",iNewID);
-		printf("입금액 : %d\n",iNewMoney);
-		return;
 	}
-	else if (iInput == 2)
-	{
-		printf("[입 금]\n");
-		printf("계좌ID : ");
-		scanf_s("%d", &iNewID);
-		printf("입금액 : ");
-		scanf_s("%d", &iNewMoney);
-		if (iOldID != iNewID)
-		{
-			printf("**입금 실패**\n계좌ID가 존재하지 않습니다.\n");
-			return;
-		}
-		iOldMoney += iNewMoney;
-		printf("**입금 성공**\n");
-		printf("계좌ID : %d\n", iNewID);
-		printf("입금액 : %d\n", iOldMoney);
-		return;
-	}
-	else if (iInput == 3)
-	{
-		printf("[출 금]\n");
-		printf("계좌ID : ");
-		scanf_s("%d", &iNewID);
-		printf("출금액 : ");
-		scanf_s("%d", &iNewMoney);
-		if (iOldID != iNewID)
-		{
-			printf("**출금 실패**\n계좌ID가 존재하지 않습니다.\n");
-			return;
-		}
-		if (iNewMoney > iOldMoney)
-		{
-			printf("**출금 실패**\n잔액이 부족합니다.\n");
-			return;
-		}
-		iOldMoney -= iNewMoney;
-		printf("**출금 성공**\n");
-		printf("계좌ID : %d\n", iNewID);
-		printf("출금액 : %d\n", iOldMoney);
-		return;
-	}
-	else if (iInput == 4)
-	{
-		printf("계좌ID : %d\n", iOldID);
-		printf("입금액 : %d\n", iOldMoney);
-		return;
-	}
-	else if (iInput == 5)
-	{
-		printf("프로그램을 종료합니다\n");
-		return;
-	}
+
 }
 
