@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <chrono>
-#define WIDTH 1001
+#define WIDTH 1024
 #define TILE_WIDTH 32
 
 //void Init(float* _P, int _Width, int _Value)
@@ -50,6 +50,32 @@ __global__ void MultMatGPU(float* _P, float* M, float* _N, int _Width) //여기 
 	}
 }
 
+__global__ void MultMatGPU_Shared(float* P, float* M, float* N, int _width)
+{
+	__shared__ float _M[TILE_WIDTH][TILE_WIDTH];
+	__shared__ float _N[TILE_WIDTH][TILE_WIDTH];
+
+	int bx = blockIdx.x, by = blockIdx.y;
+	int tx = threadIdx.x, ty = threadIdx.y;
+	int i = TILE_WIDTH * by + ty;
+	int j = TILE_WIDTH * bx + tx;
+
+	float sum = 0.f;
+	for (int m = 0; m < _width / TILE_WIDTH; ++m)
+	{
+		_M[ty][tx] = M[i * _width + m * TILE_WIDTH + tx];
+		_N[ty][tx] = N[(m * TILE_WIDTH + ty)*_width + j];
+		__syncthreads();
+
+		for (int k = 0; k < TILE_WIDTH; ++k)
+		{
+			sum = sum + _M[ty][k] * _N[k][tx];
+		}
+		__syncthreads();
+	}
+	P[i * _width + j] = sum;
+}
+
 void PrintMat(float* _P, int _Width)
 {
 	std::cout << "------------------------------------------------------------------------------------------" << std::endl;
@@ -91,29 +117,59 @@ int main()
 	cudaMemcpy(devN, arN, WIDTH * WIDTH * sizeof(float), cudaMemcpyHostToDevice);
 	cudaMemcpy(devP, arSum, WIDTH * WIDTH * sizeof(float), cudaMemcpyHostToDevice);
 
-	//3. 커널 함수 수행
-	dim3 gridDim((WIDTH - 1) / TILE_WIDTH + 1, (WIDTH - 1 ) / TILE_WIDTH + 1, 1);
-	dim3 blockDim(TILE_WIDTH, TILE_WIDTH);
-	std::chrono::system_clock::time_point St = std::chrono::system_clock::now();
-	MultMatGPU << <gridDim,blockDim >> > (devP, devM, devN, WIDTH);
-	//MultMatCPU(arSum, arM, arN, INDEX);
-	cudaError_t Status = cudaDeviceSynchronize();
-	if (Status != cudaSuccess)
+	//3. 전역 메모리 행렬 곱
 	{
-		printf("Error");
+		dim3 gridDim((WIDTH - 1) / TILE_WIDTH + 1, (WIDTH - 1) / TILE_WIDTH + 1, 1);
+		dim3 blockDim(TILE_WIDTH, TILE_WIDTH);
+		std::chrono::system_clock::time_point St = std::chrono::system_clock::now();
+		MultMatGPU << <gridDim, blockDim >> > (devP, devM, devN, WIDTH);
+		//MultMatCPU(arSum, arM, arN, INDEX);
+		cudaError_t Status = cudaDeviceSynchronize();
+		if (Status != cudaSuccess)
+		{
+			printf("Error");
+		}
+		cudaMemcpy(arSum, devP, WIDTH * WIDTH * sizeof(float), cudaMemcpyDeviceToHost);
+
+		std::chrono::system_clock::time_point Ed = std::chrono::system_clock::now();
+
+		std::chrono::nanoseconds Time = Ed - St;
+		std::chrono::microseconds microTime = std::chrono::duration_cast<std::chrono::microseconds>((Ed - St));
+		std::chrono::milliseconds milliTime = std::chrono::duration_cast<std::chrono::milliseconds>((Ed - St));
+		//PrintMat(arSum, WIDTH);
+
+		//printf("Elapsed Time = %lld nanoseconds \n \n", Time.count());
+		printf("GPU :: Elapsed Time = %lld microseconds \n \n", microTime.count());
+		//printf("Elapsed Time = %lld milliseconds \n \n", milliTime.count());
 	}
-	cudaMemcpy(arSum, devP, WIDTH * WIDTH * sizeof(float), cudaMemcpyDeviceToHost);
 
-	std::chrono::system_clock::time_point Ed = std::chrono::system_clock::now();
+	//4. 공유 메모리 행렬 곱 릴리즈 모드시 더 빠름
+	{
+		dim3 gridDim((WIDTH - 1) / TILE_WIDTH + 1, (WIDTH - 1) / TILE_WIDTH + 1, 1);
+		dim3 blockDim(TILE_WIDTH, TILE_WIDTH);
+		std::chrono::system_clock::time_point St = std::chrono::system_clock::now();
+		MultMatGPU_Shared << <gridDim, blockDim >> > (devP, devM, devN, WIDTH);
+		//MultMatCPU(arSum, arM, arN, INDEX);
+		cudaError_t Status = cudaDeviceSynchronize();
+		if (Status != cudaSuccess)
+		{
+			printf("Error");
+		}
+		cudaMemcpy(arSum, devP, WIDTH * WIDTH * sizeof(float), cudaMemcpyDeviceToHost);
 
-	std::chrono::nanoseconds Time = Ed - St;
-	std::chrono::microseconds microTime = std::chrono::duration_cast<std::chrono::microseconds>((Ed - St));
-	std::chrono::milliseconds milliTime = std::chrono::duration_cast<std::chrono::milliseconds>((Ed - St));
-	PrintMat(arSum, WIDTH);
+		std::chrono::system_clock::time_point Ed = std::chrono::system_clock::now();
 
-	//printf("Elapsed Time = %lld nanoseconds \n \n", Time.count());
-	printf("Elapsed Time = %lld microseconds \n \n", microTime.count());
-	//printf("Elapsed Time = %lld milliseconds \n \n", milliTime.count());
+		std::chrono::nanoseconds Time = Ed - St;
+		std::chrono::microseconds microTime = std::chrono::duration_cast<std::chrono::microseconds>((Ed - St));
+		std::chrono::milliseconds milliTime = std::chrono::duration_cast<std::chrono::milliseconds>((Ed - St));
+		//PrintMat(arSum, WIDTH);
+
+		//printf("Elapsed Time = %lld nanoseconds \n \n", Time.count());
+		printf("GPU Shared :: Elapsed Time = %lld microseconds \n \n", microTime.count());
+		//printf("Elapsed Time = %lld milliseconds \n \n", milliTime.count());
+	}
+
+
 
 
 
