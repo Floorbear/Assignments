@@ -1,5 +1,8 @@
 ﻿#include <stdio.h>
-
+#define SIZE 10
+#define DATASIZE 2
+#define ID 0
+#define MONEY 1
 int main()
 {
 	//int iOldID = 115;
@@ -8,14 +11,16 @@ int main()
 	int iNewID = -1;
 	int iNewMoney = -1;
 
-	int iID0 = -1;
-	int iMoney0 = -1;
+	//int iID0 = -1;
+	//int iMoney0 = -1;
 
-	int iID1 = -1;
-	int iMoney1 = -1;
+	//int iID1 = -1;
+	//int iMoney1 = -1;
 
-	int iID2 = -1;
-	int iMoney2 = -1;
+	//int iID2 = -1;
+	//int iMoney2 = -1;
+	int iData[SIZE][DATASIZE]; 
+
 
 	int iAccountCount = 0;
 
@@ -48,49 +53,36 @@ int main()
 			scanf_s("%d", &iNewID);
 			printf("입금액 : ");
 			scanf_s("%d", &iNewMoney);
-			if (iAccountCount >= 3)
+			if (iAccountCount >= SIZE)
 			{
-				printf("**계좌 개설 실패**\n이미 이미 3개의 계좌가 존재합니다.\n");
+				printf("**계좌 개설 실패**\n이미 이미 %d개의 계좌가 존재합니다.\n",SIZE);
 			}
 			else
 			{
-				if (iNewID == iID0)
+				int isExist = 0;
+				int dataIndex = 0;
+				//이미 계좌가 존재하는지 체크
+				for (; dataIndex < iAccountCount; dataIndex++)
 				{
-					printf("**계좌 개설 실패**\n이미 존재하는 아이디입니다.\n");
-					iQuickkGo = 1;
-
+					if (iNewID == iData[dataIndex][ID])
+					{
+						isExist = 1;
+						break;
+					}
 				}
-				else if (iNewID == iID1)
-				{
-					printf("**계좌 개설 실패**\n이미 존재하는 아이디입니다.\n");
-					iQuickkGo = 1;
-				}
-				else if (iNewID == iID2)
+				if (isExist)
 				{
 					printf("**계좌 개설 실패**\n이미 존재하는 아이디입니다.\n");
 					iQuickkGo = 1;
 				}
 				else
 				{
-					iAccountCount++;
 					printf("**계좌 개설 성공**\n");
 					printf("계좌ID : %d\n", iNewID);
 					printf("입금액 : %d\n", iNewMoney);
-					if (iID0 == -1) // -1 : 아직 계좌가 만들어지지 않음
-					{
-						iID0 = iNewID;
-						iMoney0 = iNewMoney;
-					}
-					else if (iID1 == -1)
-					{
-						iID1 = iNewID;
-						iMoney1 = iNewMoney;
-					}
-					else
-					{
-						iID2 = iNewID;
-						iMoney2 = iNewMoney;
-					}
+					iData[iAccountCount][ID] = iNewID;
+					iData[iAccountCount][MONEY] = iNewMoney;
+					iAccountCount++;
 				}
 			}
 
@@ -108,34 +100,28 @@ int main()
 			}
 			else
 			{
-				if (iID0 != iNewID && iID1 != iNewID && iID2 != iNewID) //계좌가 아예 존재하지 않을 수 있으니 메뉴로 돌아가야한다.
+				int isExist = 0;
+				int dataIndex = 0;
+				//이미 계좌가 존재하는지 체크
+				for (; dataIndex < iAccountCount; dataIndex++)
+				{
+					if (iNewID == iData[dataIndex][ID])
+					{
+						isExist = 1;
+						break;
+					}
+				}
+				if (!isExist)
 				{
 					printf("**입금 실패**\n계좌ID가 존재하지 않습니다.\n");
 					iQuickkGo = 1;
 				}
 				else
 				{
-					if (iID0 == iNewID)
-					{
-						iMoney0 += iNewMoney;
-						printf("**입금 성공**\n");
-						printf("계좌ID : %d\n", iNewID);
-						printf("잔액 : %d\n", iMoney0);
-					}
-					else if (iID1 == iNewID)
-					{
-						iMoney1 += iNewMoney;
-						printf("**입금 성공**\n");
-						printf("계좌ID : %d\n", iNewID);
-						printf("잔액 : %d\n", iMoney1);
-					}
-					else
-					{
-						iMoney2 += iNewMoney;
-						printf("**입금 성공**\n");
-						printf("계좌ID : %d\n", iNewID);
-						printf("잔액 : %d\n", iMoney2);
-					}
+					iData[dataIndex][MONEY] += iNewMoney;
+					printf("**입금 성공**\n");
+					printf("계좌ID : %d\n", iNewID);
+					printf("잔액 : %d\n", iData[dataIndex][MONEY]);
 				}
 			}
 			
@@ -153,57 +139,35 @@ int main()
 			}
 			else
 			{
-				if (iID0 != iNewID && iID1 != iNewID && iID2 != iNewID)
+				int isExist = 0;
+				int dataIndex = 0;
+				//이미 계좌가 존재하는지 체크
+				for (; dataIndex < iAccountCount; dataIndex++)
+				{
+					if (iNewID == iData[dataIndex][ID])
+					{
+						isExist = 1;
+						break;
+					}
+				}
+				if (!isExist)
 				{
 					printf("**출금 실패**\n계좌ID가 존재하지 않습니다.\n");
 					iQuickkGo = 1;
 				}
 				else
 				{
-					if (iID0 == iNewID)
+					if (iNewMoney > iData[dataIndex][MONEY])
 					{
-						if (iNewMoney > iMoney0)
-						{
-							printf("**출금 실패**\n잔액이 부족합니다.\n");
-							iQuickkGo = 1;
-						}
-						else
-						{
-							iMoney0 -= iNewMoney;
-							printf("**출금 성공**\n");
-							printf("계좌ID : %d\n", iNewID);
-							printf("잔액 : %d\n", iMoney0);
-						}
-					}
-					else if (iID1 == iNewID)
-					{
-						if (iNewMoney > iMoney1)
-						{
-							printf("**출금 실패**\n잔액이 부족합니다.\n");
-							iQuickkGo = 1;
-						}
-						else
-						{
-							iMoney1 -= iNewMoney;
-							printf("**출금 성공**\n");
-							printf("계좌ID : %d\n", iNewID);
-							printf("잔액 : %d\n", iMoney1);
-						}
+						printf("**출금 실패**\n잔액이 부족합니다.\n");
+						iQuickkGo = 1;
 					}
 					else
 					{
-						if (iNewMoney > iMoney0)
-						{
-							printf("**출금 실패**\n잔액이 부족합니다.\n");
-							iQuickkGo = 1;
-						}
-						else
-						{
-							iMoney2 -= iNewMoney;
-							printf("**출금 성공**\n");
-							printf("계좌ID : %d\n", iNewID);
-							printf("잔액 : %d\n", iMoney2);
-						}
+						iData[dataIndex][MONEY] -= iNewMoney;
+						printf("**출금 성공**\n");
+						printf("계좌ID : %d\n", iNewID);
+						printf("잔액 : %d\n", iData[dataIndex][MONEY]);
 					}
 				}
 			}
@@ -211,24 +175,11 @@ int main()
 		}
 		else if (iInput == 4)
 		{
-			if (iID0 != -1)
+			for (int i = 0; i < iAccountCount; i++)
 			{
-				printf("계좌ID : %d\n", iID0);
-				printf("잔액 : %d\n\n\n", iMoney0);
+				printf("계좌ID : %d\n", iData[i][ID]);
+				printf("잔액 : %d\n\n\n", iData[i][MONEY]);
 			}
-
-			if (iID1 != -1)
-			{
-				printf("계좌ID : %d\n", iID1);
-				printf("잔액 : %d\n\n\n", iMoney1);
-			}
-
-			if (iID2 != -1)
-			{
-				printf("계좌ID : %d\n", iID2);
-				printf("잔액 : %d\n\n\n", iMoney2);
-			}
-	
 		}
 		else if (iInput == 5)
 		{
